@@ -21,3 +21,105 @@
 @media(max-width:1000px){.hero-content{grid-template-columns:1fr;padding:70px 15px}.hero-visual{display:none}.hero-copy h1{font-size:3.5rem}.mood-row{grid-template-columns:repeat(3,1fr)}.crave-control-grid{grid-template-columns:1fr}.profile-layout{grid-template-columns:1fr}.admin-food-grid{grid-template-columns:1fr}}
 @media(max-width:700px){.ch-navbar .container{flex-wrap:wrap}.ch-navbar .navbar-nav{width:100%;justify-content:center;flex-wrap:wrap;padding:8px 0}.hero-copy h1{font-size:3.1rem}.hero-mini-stats{flex-wrap:wrap}.hero-actions{flex-direction:column}.mood-row{grid-template-columns:1fr 1fr}.meter-track{grid-template-columns:repeat(2,1fr)}.dna-banner{flex-direction:column;align-items:flex-start}.dna-badges{justify-content:flex-start}.auth-card{padding:28px 20px}.cart-card{grid-template-columns:1fr}.order-top{grid-template-columns:1fr}.admin-order-row{grid-template-columns:1fr}.admin-order-row small{max-width:100%}.journey-step span{font-size:.5rem}.journey{gap:2px}.crave-pulse{top:76px}.ch-popup{right:16px;bottom:16px}.food-preview-modal{max-height:90vh;overflow:auto}}
 @media(max-width:450px){.mood-row{grid-template-columns:1fr}.hero-copy h1{font-size:2.7rem}.hero-mini-stats{font-size:.68rem}.section-heading h2{font-size:1.9rem}.admin-food-mini{grid-template-columns:45px 1fr}.admin-mini-actions{grid-column:2}.admin-mini-image{width:45px;height:45px}}
+
+/* Mobile-first refinement: layout only. Existing colors and features remain unchanged. */
+.mobile-nav-toggle{display:none;border:1px solid #494356;background:rgba(255,255,255,.04);color:#fff;width:42px;height:38px;border-radius:10px;padding:8px;align-items:center;justify-content:center;flex-direction:column;gap:4px}
+.mobile-nav-toggle span{display:block;width:18px;height:2px;border-radius:4px;background:#fff;transition:.2s}
+@media(max-width:700px){
+  html,body,#root{max-width:100%;overflow-x:hidden}
+  .ch-navbar{padding:9px 0}
+  .ch-navbar .container{padding:0 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap}
+  .ch-brand{font-size:1.3rem}
+  .brand-dot{width:7px;height:7px;margin-right:7px}
+  .mobile-nav-toggle{display:flex;margin-left:auto}
+  .ch-navbar .navbar-nav{display:none;width:100%;order:3;margin:9px 0 0!important;padding:8px 0 4px;gap:4px;background:rgba(21,18,31,.96);border-top:1px solid rgba(183,156,255,.12);border-radius:0 0 14px 14px}
+  .ch-navbar .navbar-nav.mobile-open{display:flex;align-items:stretch!important}
+  .ch-navbar .nav-link{width:100%;margin:0!important;padding:11px 13px!important;border-radius:9px}
+  .ch-navbar .nav-link:hover{transform:none}
+  .ch-navbar .register-nav{background:var(--apricot);color:var(--ink)!important;text-align:center;margin-top:2px!important}
+  .logout-btn{width:100%;margin:4px 0 3px!important;padding:9px 12px}
+
+  .page-bg{min-height:calc(100vh - 58px)}
+  .hero-section{min-height:520px;align-items:flex-start}
+  .hero-content{display:block;padding:52px 18px 44px}
+  .hero-copy{padding:0}
+  .eyebrow{font-size:.62rem;letter-spacing:1.5px}
+  .hero-copy h1{font-size:clamp(2.55rem,12vw,3.35rem);letter-spacing:-1.8px;line-height:1.02;margin:13px 0 16px;max-width:360px}
+  .hero-caption{font-size:.95rem;line-height:1.5;min-height:46px;max-width:340px}
+  .hero-actions{margin-top:22px;gap:9px}
+  .hero-btn,.hero-outline-btn{width:100%;text-align:center;padding:11px 16px}
+  .hero-mini-stats{gap:8px 14px;margin-top:20px;font-size:.68rem}
+  .hero-visual{display:none}
+
+  .container.py-5{padding-left:14px!important;padding-right:14px!important;padding-top:28px!important;padding-bottom:35px!important}
+  .crave-control-grid{grid-template-columns:1fr;gap:12px;margin-top:-22px}
+  .crave-control-card{padding:16px;border-radius:17px}
+  .control-head h3,.surprise-card h3{font-size:1.05rem}
+  .meter-track{gap:7px;margin-top:13px}
+  .meter-track button{padding:9px 5px;border-radius:12px}
+  .meter-track button span{font-size:19px}
+  .meter-track button small{font-size:.68rem}
+  .surprise-card{min-height:150px}
+
+  .mood-section{padding:42px 0 18px}
+  .section-heading{margin-bottom:18px}
+  .section-heading h2{font-size:1.85rem;line-height:1.1}
+  .section-heading p{font-size:.86rem;line-height:1.45}
+  .mood-row{grid-template-columns:1fr 1fr;gap:8px}
+  .mood-pill{padding:10px;border-radius:14px;gap:8px}
+  .mood-pill>span{font-size:23px}
+  .mood-pill strong{font-size:.78rem}
+  .mood-pill small{font-size:.62rem;line-height:1.2}
+  .dna-banner{margin:24px 0 38px;padding:18px;border-radius:17px;gap:13px}
+  .dna-banner h3{font-size:1.05rem}
+  .dna-banner p{font-size:.78rem;line-height:1.4}
+  .dna-badges{gap:6px}
+  .dna-badges span{padding:7px 9px;font-size:.65rem}
+
+  .search-panel{padding:12px;border-radius:15px;margin-bottom:18px}
+  .search-wrap{padding:2px 10px}
+  .search-wrap input{padding:10px 4px;font-size:.88rem}
+  .category-row{padding-top:10px;gap:6px}
+  .category-pill{padding:7px 12px;font-size:.74rem}
+  .row.g-4{--bs-gutter-x:12px;--bs-gutter-y:12px}
+  .food-image-wrap{height:165px}
+  .food-card{border-radius:16px}
+  .food-card-body{padding:13px}
+  .food-card-body h5{font-size:.92rem}
+  .food-card-body p{font-size:.75rem;min-height:36px;line-height:1.35}
+  .food-bottom strong{font-size:1rem}
+  .food-bottom button{padding:7px 10px;font-size:.72rem}
+  .quick-view{display:none}
+
+  .auth-page{min-height:calc(100vh - 58px);padding:24px 14px}
+  .auth-card{padding:25px 18px;border-radius:19px}
+  .auth-brand{font-size:1.45rem}
+  .auth-card h1{font-size:1.75rem;margin-top:10px}
+  .auth-card>p{font-size:.84rem;margin-bottom:20px}
+  .input-group-modern{margin-bottom:14px}
+  .input-group-modern label{font-size:.82rem;margin-bottom:5px}
+  .input-group-modern input{padding:11px 12px;font-size:.9rem}
+  .auth-btn{padding:12px}
+
+  .cart-card,.order-card,.profile-card,.admin-card,.stat-card{border-radius:16px}
+  .food-preview-modal,.locked-modal,.surprise-modal{border-radius:19px}
+  .preview-image{height:220px}
+  .preview-copy{padding:19px}
+  .preview-copy h2,.locked-modal h2,.surprise-modal h2{font-size:1.55rem}
+  .preview-footer{gap:10px}
+  .preview-footer .crave-btn{padding:10px 13px}
+  .locked-modal,.surprise-modal{padding:25px 18px}
+  .locked-actions{flex-direction:column}
+  .locked-actions button{width:100%}
+  .crave-pulse{top:68px;width:calc(100vw - 24px);padding:12px 13px}
+  .ch-popup{right:12px;bottom:12px;width:calc(100vw - 24px);padding:12px}
+}
+@media(max-width:450px){
+  .hero-content{padding-top:44px}
+  .hero-copy h1{font-size:2.55rem}
+  .mood-row{grid-template-columns:1fr}
+  .meter-track{grid-template-columns:repeat(2,1fr)}
+  .food-image-wrap{height:150px}
+  .food-card-body{padding:12px}
+  .food-bottom{gap:6px}
+}
