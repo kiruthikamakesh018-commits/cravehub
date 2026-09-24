@@ -1,1 +1,46 @@
-body{background:#f8f9fa}.hero{background:linear-gradient(135deg,#111,#5b3a00);padding:70px 20px}.hero h1{font-size:clamp(2rem,5vw,4rem);font-weight:800}.food-card{border:0;border-radius:16px;overflow:hidden;box-shadow:0 5px 18px rgba(0,0,0,.08);transition:.2s}.food-card:hover{transform:translateY(-4px)}.food-card img{height:190px;object-fit:cover}.auth-card{max-width:500px;background:white;padding:30px;border-radius:16px;box-shadow:0 5px 20px rgba(0,0,0,.08)}.navbar-brand{font-size:1.4rem}footer{margin-top:auto}
+body {
+  background: #f8f9fa;
+}
+
+.hero {
+  background: linear-gradient(135deg, #111, #5b3a00);
+  padding: 70px 20px;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 800;
+}
+
+.food-card {
+  border: 0;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 5px 18px rgba(0, 0, 0, 0.08);
+  transition: 0.2s;
+}
+
+.food-card:hover {
+  transform: translateY(-4px);
+}
+
+.food-card img {
+  height: 190px;
+  object-fit: cover;
+}
+
+.auth-card {
+  max-width: 500px;
+  background: white;
+  padding: 30px;
+  border-radius: 16px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.navbar-brand {
+  font-size: 1.4rem;
+}
+
+footer {
+  margin-top: auto;
+}

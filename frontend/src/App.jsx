@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, Route, Routes, useNavigate } from "react-router-dom";
 import api from "./api";
 
@@ -132,7 +132,6 @@ function Navbar({ user, setUser }) {
   return (
     <nav className="navbar navbar-expand-lg ch-navbar sticky-top">
       <div className="container">
-
         <Link
           className="navbar-brand ch-brand"
           to="/"
@@ -159,7 +158,6 @@ function Navbar({ user, setUser }) {
             mobileOpen ? "mobile-open" : ""
           }`}
         >
-
           <Link
             className="nav-link"
             to="/"
@@ -195,10 +193,6 @@ function Navbar({ user, setUser }) {
               </Link>
             </>
           )}
-
-          {/* =========================
-              ADMIN LINK - FIXED
-          ========================= */}
 
           {user?.role === "admin" && (
             <Link
@@ -236,7 +230,6 @@ function Navbar({ user, setUser }) {
               Logout
             </button>
           )}
-
         </div>
       </div>
     </nav>
@@ -251,10 +244,7 @@ function QuickPreview({ food, onClose, onAdd }) {
   if (!food) return null;
 
   return (
-    <div
-      className="modal-backdrop-custom"
-      onClick={onClose}
-    >
+    <div className="modal-backdrop-custom" onClick={onClose}>
       <div
         className="food-preview-modal"
         onClick={(e) => e.stopPropagation()}
@@ -272,9 +262,7 @@ function QuickPreview({ food, onClose, onAdd }) {
         </div>
 
         <div className="preview-copy">
-          <span className="mini-tag">
-            {food.category || "Food"}
-          </span>
+          <span className="mini-tag">{food.category || "Food"}</span>
 
           <h2>{food.name}</h2>
 
@@ -286,10 +274,7 @@ function QuickPreview({ food, onClose, onAdd }) {
           <div className="preview-footer">
             <strong>₹{food.price}</strong>
 
-            <button
-              className="crave-btn"
-              onClick={() => onAdd(food)}
-            >
+            <button className="crave-btn" onClick={() => onAdd(food)}>
               Add to Crave
             </button>
           </div>
@@ -307,10 +292,7 @@ function CraveLocked({ food, onClose, onLogin }) {
   if (!food) return null;
 
   return (
-    <div
-      className="modal-backdrop-custom"
-      onClick={onClose}
-    >
+    <div className="modal-backdrop-custom" onClick={onClose}>
       <div
         className="locked-modal"
         onClick={(e) => e.stopPropagation()}
@@ -321,32 +303,21 @@ function CraveLocked({ food, onClose, onLogin }) {
 
         <div className="lock-icon">🔒</div>
 
-        <span className="mini-tag">
-          CRAVE LOCKED
-        </span>
+        <span className="mini-tag">CRAVE LOCKED</span>
 
-        <h2>
-          That craving needs a login.
-        </h2>
+        <h2>That craving needs a login.</h2>
 
         <p>
-          Sign in to save{" "}
-          <strong>{food.name}</strong>{" "}
-          to your cart and start your Crave Journey.
+          Sign in to save <strong>{food.name}</strong> to your cart and
+          start your Crave Journey.
         </p>
 
         <div className="locked-actions">
-          <button
-            className="ghost-btn"
-            onClick={onClose}
-          >
+          <button className="ghost-btn" onClick={onClose}>
             Maybe later
           </button>
 
-          <button
-            className="crave-btn"
-            onClick={onLogin}
-          >
+          <button className="crave-btn" onClick={onLogin}>
             Login & Crave
           </button>
         </div>
@@ -375,13 +346,9 @@ function Home({ user }) {
   useEffect(() => {
     loadFoods();
 
-    const timer = setInterval(
-      () =>
-        setCaptionIndex(
-          (i) => (i + 1) % captions.length
-        ),
-      2800
-    );
+    const timer = setInterval(() => {
+      setCaptionIndex((i) => (i + 1) % captions.length);
+    }, 2800);
 
     return () => clearInterval(timer);
   }, []);
@@ -389,9 +356,12 @@ function Home({ user }) {
   async function loadFoods() {
     try {
       const res = await api.get("/foods");
-      setFoods(res.data || []);
+
+      console.log("FOODS FROM API:", res.data);
+
+      setFoods(Array.isArray(res.data) ? res.data : []);
     } catch (err) {
-      console.log(err);
+      console.error("Food loading error:", err);
 
       notify(
         "Could not load the menu. Check your backend connection.",
@@ -407,13 +377,9 @@ function Home({ user }) {
       return;
     }
 
-    const cart = JSON.parse(
-      localStorage.getItem("cart") || "[]"
-    );
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-    const existing = cart.find(
-      (item) => item._id === food._id
-    );
+    const existing = cart.find((item) => item._id === food._id);
 
     if (existing) {
       existing.quantity += 1;
@@ -424,34 +390,23 @@ function Home({ user }) {
       });
     }
 
-    localStorage.setItem(
-      "cart",
-      JSON.stringify(cart)
-    );
+    localStorage.setItem("cart", JSON.stringify(cart));
 
     setPreview(null);
 
-    notify(
-      `${food.name} is locked into your cravings.`
-    );
+    notify(`${food.name} is locked into your cravings.`);
   }
 
   function surpriseMe() {
     if (!foods.length) {
-      notify(
-        "No menu items are available yet.",
-        "info"
-      );
+      notify("No menu items are available yet.", "info");
       return;
     }
 
     setSurprise("spinning");
 
     setTimeout(() => {
-      const item =
-        foods[
-          Math.floor(Math.random() * foods.length)
-        ];
+      const item = foods[Math.floor(Math.random() * foods.length)];
 
       setSurprise(item);
     }, 900);
@@ -459,99 +414,62 @@ function Home({ user }) {
 
   const categories = [
     "All",
-    ...new Set(
-      foods
-        .map((f) => f.category)
-        .filter(Boolean)
-    ),
+    ...new Set(foods.map((f) => f.category).filter(Boolean)),
   ];
 
+  /*
+   * IMPORTANT FIX:
+   *
+   * Search and category filter the menu.
+   * Mood and Crave Meter no longer hide every food item.
+   *
+   * This means your API foods will always be visible unless
+   * the user actually searches or selects a category.
+   */
   const filteredFoods = foods.filter((food) => {
     const hay =
-      `${food.name || ""} ${
-        food.description || ""
-      } ${food.category || ""}`.toLowerCase();
+      `${food.name || ""} ${food.description || ""} ${
+        food.category || ""
+      }`.toLowerCase();
 
-    const searchMatch = hay.includes(
-      search.toLowerCase()
-    );
+    const searchMatch = hay.includes(search.toLowerCase());
 
-    const moodMatch =
-      !mood ||
-      hay.includes(mood.toLowerCase()) ||
-      (mood === "Spicy" &&
-        /spicy|chilli|chili|pepper|masala|tandoori/i.test(
-          hay
-        )) ||
-      (mood === "Comfort" &&
-        /biryani|rice|pizza|burger|noodle|pasta|soup/i.test(
-          hay
-        )) ||
-      (mood === "Energetic" &&
-        /protein|salad|wrap|grill|chicken|egg/i.test(
-          hay
-        ));
+    const categoryMatch =
+      category === "All" || food.category === category;
 
-    const meterMatch =
-      meter !== "Extreme" ||
-      Number(food.price || 0) >= 250;
-
-    return (
-      searchMatch &&
-      moodMatch &&
-      (category === "All" ||
-        food.category === category) &&
-      meterMatch
-    );
+    return searchMatch && categoryMatch;
   });
 
   return (
     <div className="page-bg">
-
       <section className="hero-section">
-
         <div className="hero-orb orb-one" />
         <div className="hero-orb orb-two" />
         <div className="hero-orb orb-three" />
 
         <div className="container hero-content">
-
           <div className="hero-copy">
-
-            <div className="eyebrow">
-              WELCOME TO CRAVEHUB
-            </div>
+            <div className="eyebrow">WELCOME TO CRAVEHUB</div>
 
             <h1>
               Food that makes
               <span> your mood.</span>
             </h1>
 
-            <p
-              className="hero-caption"
-              key={captionIndex}
-            >
+            <p className="hero-caption" key={captionIndex}>
               {captions[captionIndex]}
             </p>
 
             <div className="hero-actions">
-
-              <a
-                href="#crave-menu"
-                className="btn hero-btn"
-              >
+              <a href="#crave-menu" className="btn hero-btn">
                 Explore Menu
               </a>
 
               {!user && (
-                <Link
-                  to="/register"
-                  className="btn hero-outline-btn"
-                >
+                <Link to="/register" className="btn hero-outline-btn">
                   Join CraveHub
                 </Link>
               )}
-
             </div>
 
             <div className="hero-mini-stats">
@@ -559,405 +477,249 @@ function Home({ user }) {
               <span>✦ Surprise-ready</span>
               <span>✦ Door-bound</span>
             </div>
-
           </div>
 
           <div className="hero-visual">
-
-            <div className="floating-food food-a">
-              🍕
-            </div>
-
-            <div className="floating-food food-b">
-              🍔
-            </div>
-
-            <div className="floating-food food-c">
-              🍟
-            </div>
+            <div className="floating-food food-a">🍕</div>
+            <div className="floating-food food-b">🍔</div>
+            <div className="floating-food food-c">🍟</div>
 
             <div className="hero-food-card">
+              <div className="hero-food-emoji">🍜</div>
 
-              <div className="hero-food-emoji">
-                🍜
-              </div>
+              <span className="hero-card-label">TONIGHT'S CRAVE</span>
 
-              <span className="hero-card-label">
-                TONIGHT'S CRAVE
-              </span>
+              <h4>Something delicious</h4>
 
-              <h4>
-                Something delicious
-              </h4>
+              <p>is waiting for you.</p>
 
-              <p>
-                is waiting for you.
-              </p>
-
-              <div className="mini-stars">
-                ✦ ✦ ✦
-              </div>
-
+              <div className="mini-stars">✦ ✦ ✦</div>
             </div>
-
           </div>
-
         </div>
-
       </section>
 
-      <main
-        className="container py-5"
-        id="crave-menu"
-      >
-
+      <main className="container py-5" id="crave-menu">
         <section className="crave-control-grid">
-
           <div className="crave-control-card meter-card">
-
             <div className="control-head">
-
               <div>
-                <span className="section-kicker">
-                  🧠 CRAVE METER
-                </span>
+                <span className="section-kicker">🧠 CRAVE METER</span>
 
-                <h3>
-                  How intense is it?
-                </h3>
+                <h3>How intense is it?</h3>
               </div>
 
               <strong>{meter}</strong>
-
             </div>
 
             <div className="meter-track">
-
               {METER_LEVELS.map((m) => (
                 <button
                   key={m.key}
-                  className={
-                    meter === m.key
-                      ? "active"
-                      : ""
-                  }
-                  onClick={() =>
-                    setMeter(m.key)
-                  }
+                  className={meter === m.key ? "active" : ""}
+                  onClick={() => setMeter(m.key)}
                 >
                   <span>{m.emoji}</span>
                   <small>{m.key}</small>
                 </button>
               ))}
-
             </div>
-
           </div>
 
           <div className="crave-control-card surprise-card">
-
             <div>
-
               <span className="section-kicker">
                 🎲 SURPRISE MY CRAVING
               </span>
 
-              <h3>
-                Don't make me choose.
-              </h3>
+              <h3>Don't make me choose.</h3>
 
-              <p>
-                Let CraveHub pick a random bite.
-              </p>
-
+              <p>Let CraveHub pick a random bite.</p>
             </div>
 
-            <button
-              className="surprise-btn"
-              onClick={surpriseMe}
-            >
+            <button className="surprise-btn" onClick={surpriseMe}>
               Surprise me <span>↗</span>
             </button>
-
           </div>
-
         </section>
 
         <section className="mood-section">
-
           <div className="section-heading">
+            <span>😊 MOOD → FOOD</span>
 
-            <span>
-              😊 MOOD → FOOD
-            </span>
+            <h2>What are you feeling?</h2>
 
-            <h2>
-              What are you feeling?
-            </h2>
-
-            <p>
-              Tap a mood and let the menu move with you.
-            </p>
-
+            <p>Tap a mood and let the menu move with you.</p>
           </div>
 
           <div className="mood-row">
-
             {MOODS.map((m) => (
               <button
                 key={m.key}
                 className={`mood-pill ${
-                  mood === m.key
-                    ? "active"
-                    : ""
+                  mood === m.key ? "active" : ""
                 }`}
                 onClick={() =>
-                  setMood(
-                    mood === m.key
-                      ? ""
-                      : m.key
-                  )
+                  setMood(mood === m.key ? "" : m.key)
                 }
               >
-
                 <span>{m.emoji}</span>
 
                 <div>
                   <strong>{m.key}</strong>
                   <small>{m.text}</small>
                 </div>
-
               </button>
             ))}
-
           </div>
-
         </section>
 
         <section className="dna-banner">
-
           <div>
+            <span className="section-kicker">💜 CRAVE DNA</span>
 
-            <span className="section-kicker">
-              💜 CRAVE DNA
-            </span>
-
-            <h3>
-              Your taste has a personality.
-            </h3>
+            <h3>Your taste has a personality.</h3>
 
             <p>
               Every choice helps turn CraveHub into your kind of menu.
             </p>
-
           </div>
 
           <div className="dna-badges">
-            <span>
-              🍔 Comfort Chaser
-            </span>
-
-            <span>
-              🌶️ Heat Curious
-            </span>
-
-            <span>
-              ✨ Explorer
-            </span>
+            <span>🍔 Comfort Chaser</span>
+            <span>🌶️ Heat Curious</span>
+            <span>✨ Explorer</span>
           </div>
-
         </section>
 
         <div className="section-heading text-center">
-
           <span>EXPLORE</span>
 
-          <h2>
-            Discover Your Cravings
-          </h2>
+          <h2>Discover Your Cravings</h2>
 
           <p>
             {mood || meter !== "Medium"
-              ? `Showing ${
-                  mood ||
-                  meter.toLowerCase()
-                } cravings.`
+              ? `Your ${mood || meter.toLowerCase()} craving mode is active.`
               : "Pick your favourite and let the good food begin."}
           </p>
-
         </div>
 
         <div className="search-panel">
-
           <div className="search-wrap">
-
             <span>⌕</span>
 
             <input
               placeholder="Search pizza, burger, biryani..."
               value={search}
-              onChange={(e) =>
-                setSearch(e.target.value)
-              }
+              onChange={(e) => setSearch(e.target.value)}
             />
-
           </div>
 
           <div className="category-row">
-
             {categories.map((cat) => (
               <button
                 key={cat}
                 className={`category-pill ${
-                  category === cat
-                    ? "active"
-                    : ""
+                  category === cat ? "active" : ""
                 }`}
-                onClick={() =>
-                  setCategory(cat)
-                }
+                onClick={() => setCategory(cat)}
               >
                 {cat}
               </button>
             ))}
-
           </div>
-
         </div>
 
+        {/* MENU */}
         <div className="row g-4 mt-2">
-
           {filteredFoods.length === 0 ? (
-
             <div className="empty-box smart-empty">
-
-              <div className="empty-orbit">
-                🍽️
-              </div>
+              <div className="empty-orbit">🍽️</div>
 
               <span className="section-kicker">
                 SMART EMPTY STATE
               </span>
 
-              <h4>
-                No match for this craving.
-              </h4>
+              <h4>No match for this craving.</h4>
 
               <p>
-                Try another mood, lower the craving intensity, or clear your search.
+                Try another category or clear your search.
               </p>
 
               <button
                 className="ghost-btn"
                 onClick={() => {
-                  setMood("");
-                  setMeter("Medium");
                   setSearch("");
                   setCategory("All");
+                  setMood("");
+                  setMeter("Medium");
                 }}
               >
                 Reset my cravings
               </button>
-
             </div>
-
           ) : (
-
-            filteredFoods.map(
-              (food, index) => (
-
+            filteredFoods.map((food, index) => (
+              <div
+                className="col-sm-6 col-lg-4 col-xl-3"
+                key={food._id}
+              >
                 <div
-                  className="col-sm-6 col-lg-4 col-xl-3"
-                  key={food._id}
+                  className={`food-card delay-${index % 4}`}
+                  onClick={() => setPreview(food)}
                 >
+                  <div className="food-image-wrap">
+                    {food.image ? (
+                      <img src={food.image} alt={food.name} />
+                    ) : (
+                      <div className="food-placeholder">🍔</div>
+                    )}
 
-                  <div
-                    className={`food-card delay-${
-                      index % 4
-                    }`}
-                    onClick={() =>
-                      setPreview(food)
-                    }
-                  >
+                    <span className="food-category">
+                      {food.category || "Food"}
+                    </span>
 
-                    <div className="food-image-wrap">
-
-                      {food.image ? (
-                        <img
-                          src={food.image}
-                          alt={food.name}
-                        />
-                      ) : (
-                        <div className="food-placeholder">
-                          🍔
-                        </div>
-                      )}
-
-                      <span className="food-category">
-                        {food.category || "Food"}
-                      </span>
-
-                      <span className="quick-view">
-                        Quick preview
-                      </span>
-
-                    </div>
-
-                    <div className="food-card-body">
-
-                      <div className="food-card-title">
-
-                        <h5>
-                          {food.name}
-                        </h5>
-
-                        <span>↗</span>
-
-                      </div>
-
-                      <p>
-                        {food.description ||
-                          "Delicious food made for your cravings."}
-                      </p>
-
-                      <div className="food-bottom">
-
-                        <strong>
-                          ₹{food.price}
-                        </strong>
-
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            addToCart(food);
-                          }}
-                        >
-                          + Add
-                        </button>
-
-                      </div>
-
-                    </div>
-
+                    <span className="quick-view">
+                      Quick preview
+                    </span>
                   </div>
 
+                  <div className="food-card-body">
+                    <div className="food-card-title">
+                      <h5>{food.name}</h5>
+
+                      <span>↗</span>
+                    </div>
+
+                    <p>
+                      {food.description ||
+                        "Delicious food made for your cravings."}
+                    </p>
+
+                    <div className="food-bottom">
+                      <strong>₹{food.price}</strong>
+
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addToCart(food);
+                        }}
+                      >
+                        + Add
+                      </button>
+                    </div>
+                  </div>
                 </div>
-
-              )
-            )
-
+              </div>
+            ))
           )}
-
         </div>
-
       </main>
 
       {preview && (
         <QuickPreview
           food={preview}
-          onClose={() =>
-            setPreview(null)
-          }
+          onClose={() => setPreview(null)}
           onAdd={addToCart}
         />
       )}
@@ -965,9 +727,7 @@ function Home({ user }) {
       {locked && (
         <CraveLocked
           food={locked}
-          onClose={() =>
-            setLocked(null)
-          }
+          onClose={() => setLocked(null)}
           onLogin={() => {
             setLocked(null);
             nav("/login");
@@ -978,43 +738,25 @@ function Home({ user }) {
       {surprise && (
         <div
           className="modal-backdrop-custom"
-          onClick={() =>
-            setSurprise(null)
-          }
+          onClick={() => setSurprise(null)}
         >
-
           <div
             className="surprise-modal"
-            onClick={(e) =>
-              e.stopPropagation()
-            }
+            onClick={(e) => e.stopPropagation()}
           >
-
             {surprise === "spinning" ? (
-
               <>
-                <div className="dice-spin">
-                  🎲
-                </div>
+                <div className="dice-spin">🎲</div>
 
-                <h2>
-                  Reading your craving...
-                </h2>
+                <h2>Reading your craving...</h2>
 
-                <p>
-                  Let the universe pick dinner.
-                </p>
+                <p>Let the universe pick dinner.</p>
               </>
-
             ) : (
-
               <>
-                <span className="mini-tag">
-                  YOUR RANDOM CRAVE
-                </span>
+                <span className="mini-tag">YOUR RANDOM CRAVE</span>
 
                 <div className="surprise-food-image">
-
                   {surprise.image ? (
                     <img
                       src={surprise.image}
@@ -1023,12 +765,9 @@ function Home({ user }) {
                   ) : (
                     <span>🍔</span>
                   )}
-
                 </div>
 
-                <h2>
-                  {surprise.name}
-                </h2>
+                <h2>{surprise.name}</h2>
 
                 <p>
                   {surprise.description ||
@@ -1036,10 +775,7 @@ function Home({ user }) {
                 </p>
 
                 <div className="preview-footer">
-
-                  <strong>
-                    ₹{surprise.price}
-                  </strong>
+                  <strong>₹{surprise.price}</strong>
 
                   <button
                     className="crave-btn"
@@ -1050,18 +786,12 @@ function Home({ user }) {
                   >
                     That's the one ✦
                   </button>
-
                 </div>
-
               </>
-
             )}
-
           </div>
-
         </div>
       )}
-
     </div>
   );
 }
@@ -1080,20 +810,14 @@ function Auth({ type, setUser }) {
     password: "",
   });
 
-  const [showPassword, setShowPassword] =
-    useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   async function submit(e) {
     e.preventDefault();
 
     try {
-
       if (isRegister) {
-
-        await api.post(
-          "/auth/register",
-          form
-        );
+        await api.post("/auth/register", form);
 
         notify(
           "Your CraveHub account is ready. Welcome to the table."
@@ -1104,25 +828,14 @@ function Auth({ type, setUser }) {
         return;
       }
 
-      const res = await api.post(
-        "/auth/login",
-        {
-          email: form.email,
-          password: form.password,
-        }
-      );
+      const res = await api.post("/auth/login", {
+        email: form.email,
+        password: form.password,
+      });
 
-      // IMPORTANT:
-      // Save the complete user object including role.
-      console.log(
-        "LOGIN RESPONSE:",
-        res.data
-      );
+      console.log("LOGIN RESPONSE:", res.data);
 
-      localStorage.setItem(
-        "token",
-        res.data.token
-      );
+      localStorage.setItem("token", res.data.token);
 
       localStorage.setItem(
         "user",
@@ -1131,22 +844,14 @@ function Auth({ type, setUser }) {
 
       setUser(res.data.user);
 
-      notify(
-        "Welcome back. Your cravings are ready."
-      );
+      notify("Welcome back. Your cravings are ready.");
 
       nav("/");
-
     } catch (err) {
-
-      console.error(
-        "Login/Register error:",
-        err
-      );
+      console.error("Login/Register error:", err);
 
       notify(
-        err.response?.data?.message ||
-          "Something went wrong",
+        err.response?.data?.message || "Something went wrong",
         "error"
       );
     }
@@ -1154,24 +859,18 @@ function Auth({ type, setUser }) {
 
   return (
     <div className="auth-page">
-
       <div className="auth-blob blob-a" />
       <div className="auth-blob blob-b" />
 
       <div className="auth-card">
-
-        <div className="auth-brand">
-          CraveHub
-        </div>
+        <div className="auth-brand">CraveHub</div>
 
         <span className="section-kicker centered">
           YOUR CRAVING SPACE
         </span>
 
         <h1>
-          {isRegister
-            ? "Create your account"
-            : "Welcome back"}
+          {isRegister ? "Create your account" : "Welcome back"}
         </h1>
 
         <p>
@@ -1181,10 +880,8 @@ function Auth({ type, setUser }) {
         </p>
 
         <form onSubmit={submit}>
-
           {isRegister && (
             <div className="input-group-modern">
-
               <label>Name</label>
 
               <input
@@ -1198,12 +895,10 @@ function Auth({ type, setUser }) {
                 placeholder="Enter your name"
                 required
               />
-
             </div>
           )}
 
           <div className="input-group-modern">
-
             <label>Email</label>
 
             <input
@@ -1218,21 +913,14 @@ function Auth({ type, setUser }) {
               placeholder="Enter your email"
               required
             />
-
           </div>
 
           <div className="input-group-modern">
-
             <label>Password</label>
 
             <div className="password-wrap">
-
               <input
-                type={
-                  showPassword
-                    ? "text"
-                    : "password"
-                }
+                type={showPassword ? "text" : "password"}
                 value={form.password}
                 onChange={(e) =>
                   setForm({
@@ -1246,60 +934,37 @@ function Auth({ type, setUser }) {
 
               <button
                 type="button"
-                onClick={() =>
-                  setShowPassword(
-                    !showPassword
-                  )
-                }
+                onClick={() => setShowPassword(!showPassword)}
                 aria-label={
-                  showPassword
-                    ? "Hide password"
-                    : "Show password"
+                  showPassword ? "Hide password" : "Show password"
                 }
               >
-                {showPassword
-                  ? "◉"
-                  : "◌"}
+                {showPassword ? "◉" : "◌"}
               </button>
-
             </div>
-
           </div>
 
           <button className="auth-btn">
-
-            {isRegister
-              ? "Create Account"
-              : "Login"}
+            {isRegister ? "Create Account" : "Login"}
 
             <span>→</span>
-
           </button>
-
         </form>
 
         <div className="auth-switch">
-
           {isRegister ? (
             <>
               Already have an account?{" "}
-              <Link to="/login">
-                Login
-              </Link>
+              <Link to="/login">Login</Link>
             </>
           ) : (
             <>
               Don't have an account?{" "}
-              <Link to="/register">
-                Register
-              </Link>
+              <Link to="/register">Register</Link>
             </>
           )}
-
         </div>
-
       </div>
-
     </div>
   );
 }
@@ -1310,27 +975,17 @@ function Auth({ type, setUser }) {
 
 function Cart() {
   const [cart, setCart] = useState(
-    JSON.parse(
-      localStorage.getItem("cart") ||
-        "[]"
-    )
+    JSON.parse(localStorage.getItem("cart") || "[]")
   );
 
-  const [address, setAddress] =
-    useState("");
-
-  const [pulse, setPulse] =
-    useState(false);
+  const [address, setAddress] = useState("");
+  const [pulse, setPulse] = useState(false);
 
   const nav = useNavigate();
 
   function saveCart(c) {
     setCart(c);
-
-    localStorage.setItem(
-      "cart",
-      JSON.stringify(c)
-    );
+    localStorage.setItem("cart", JSON.stringify(c));
   }
 
   const increase = (id) =>
@@ -1339,8 +994,7 @@ function Cart() {
         i._id === id
           ? {
               ...i,
-              quantity:
-                i.quantity + 1,
+              quantity: i.quantity + 1,
             }
           : i
       )
@@ -1353,83 +1007,53 @@ function Cart() {
           i._id === id
             ? {
                 ...i,
-                quantity:
-                  i.quantity - 1,
+                quantity: i.quantity - 1,
               }
             : i
         )
-        .filter(
-          (i) => i.quantity > 0
-        )
+        .filter((i) => i.quantity > 0)
     );
 
   const remove = (id) =>
-    saveCart(
-      cart.filter(
-        (i) => i._id !== id
-      )
-    );
+    saveCart(cart.filter((i) => i._id !== id));
 
   const total = cart.reduce(
-    (s, i) =>
-      s +
-      Number(i.price) *
-        i.quantity,
+    (s, i) => s + Number(i.price) * i.quantity,
     0
   );
 
   async function placeOrder() {
-
     if (!cart.length) {
-      notify(
-        "Your cart is empty",
-        "info"
-      );
+      notify("Your cart is empty", "info");
       return;
     }
 
     if (!address.trim()) {
-      notify(
-        "Please enter delivery address",
-        "error"
-      );
+      notify("Please enter delivery address", "error");
       return;
     }
 
     try {
+      await api.post("/orders", {
+        items: cart.map((i) => ({
+          food: i._id,
+          name: i.name,
+          price: i.price,
+          quantity: i.quantity,
+        })),
+        totalAmount: total,
+        address,
+      });
 
-      await api.post(
-        "/orders",
-        {
-          items: cart.map((i) => ({
-            food: i._id,
-            name: i.name,
-            price: i.price,
-            quantity: i.quantity,
-          })),
-          totalAmount: total,
-          address,
-        }
-      );
-
-      localStorage.removeItem(
-        "cart"
-      );
+      localStorage.removeItem("cart");
 
       setCart([]);
-
       setPulse(true);
 
-      window.setTimeout(
-        () => nav("/orders"),
-        1400
-      );
-
+      window.setTimeout(() => nav("/orders"), 1400);
     } catch (err) {
-
       notify(
-        err.response?.data?.message ||
-          "Failed to place order",
+        err.response?.data?.message || "Failed to place order",
         "error"
       );
     }
@@ -1437,167 +1061,91 @@ function Cart() {
 
   return (
     <div className="page-bg">
-
       <div className="container py-5">
-
         <div className="section-heading">
+          <span>CRAVE LOCKER</span>
 
-          <span>
-            CRAVE LOCKER
-          </span>
+          <h2>🛒 Your Cart</h2>
 
-          <h2>
-            🛒 Your Cart
-          </h2>
-
-          <p>
-            Everything you chose, ready for the journey.
-          </p>
-
+          <p>Everything you chose, ready for the journey.</p>
         </div>
 
         {!cart.length ? (
-
           <div className="empty-box smart-empty">
-
-            <div className="empty-orbit">
-              🛒
-            </div>
+            <div className="empty-orbit">🛒</div>
 
             <span className="section-kicker">
               NOTHING LOCKED YET
             </span>
 
-            <h4>
-              Your cart is waiting for a craving.
-            </h4>
+            <h4>Your cart is waiting for a craving.</h4>
 
             <p>
               Explore the menu and give it something to carry.
             </p>
 
-            <Link
-              to="/"
-              className="crave-btn"
-            >
+            <Link to="/" className="crave-btn">
               Browse Food ✦
             </Link>
-
           </div>
-
         ) : (
-
           <>
-
             {cart.map((item) => (
-
-              <div
-                className="cart-card"
-                key={item._id}
-              >
-
+              <div className="cart-card" key={item._id}>
                 <div className="cart-food">
-
                   <div className="cart-thumb">
-
                     {item.image ? (
-                      <img
-                        src={item.image}
-                        alt=""
-                      />
+                      <img src={item.image} alt="" />
                     ) : (
                       "🍔"
                     )}
-
                   </div>
 
                   <div>
+                    <h5>{item.name}</h5>
 
-                    <h5>
-                      {item.name}
-                    </h5>
-
-                    <p>
-                      ₹{item.price} each
-                    </p>
-
+                    <p>₹{item.price} each</p>
                   </div>
-
                 </div>
 
                 <div className="qty-controls">
-
-                  <button
-                    onClick={() =>
-                      decrease(
-                        item._id
-                      )
-                    }
-                  >
+                  <button onClick={() => decrease(item._id)}>
                     −
                   </button>
 
-                  <strong>
-                    {item.quantity}
-                  </strong>
+                  <strong>{item.quantity}</strong>
 
-                  <button
-                    onClick={() =>
-                      increase(
-                        item._id
-                      )
-                    }
-                  >
+                  <button onClick={() => increase(item._id)}>
                     +
                   </button>
-
                 </div>
 
                 <strong className="cart-price">
-                  ₹
-                  {Number(item.price) *
-                    item.quantity}
+                  ₹{Number(item.price) * item.quantity}
                 </strong>
 
                 <button
                   className="remove-btn"
-                  onClick={() =>
-                    remove(item._id)
-                  }
+                  onClick={() => remove(item._id)}
                 >
                   Remove
                 </button>
-
               </div>
-
             ))}
 
             <div className="checkout-card">
-
               <div className="total-row">
+                <span>Total Crave</span>
 
-                <span>
-                  Total Crave
-                </span>
-
-                <strong>
-                  ₹{total}
-                </strong>
-
+                <strong>₹{total}</strong>
               </div>
 
-              <label>
-                Delivery Address
-              </label>
+              <label>Delivery Address</label>
 
               <textarea
                 rows="3"
                 value={address}
-                onChange={(e) =>
-                  setAddress(
-                    e.target.value
-                  )
-                }
+                onChange={(e) => setAddress(e.target.value)}
                 placeholder="Where should the craving land?"
               />
 
@@ -1607,22 +1155,15 @@ function Cart() {
               >
                 Lock My Craving 🎉
               </button>
-
             </div>
-
           </>
-
         )}
-
       </div>
 
       <CravePulse
         show={pulse}
-        onDone={() =>
-          setPulse(false)
-        }
+        onDone={() => setPulse(false)}
       />
-
     </div>
   );
 }
@@ -1639,12 +1180,10 @@ const JOURNEY = [
 ];
 
 function Journey({ status }) {
-
   const index =
     status === "Delivered"
       ? 3
-      : status ===
-        "Out for Delivery"
+      : status === "Out for Delivery"
       ? 2
       : status === "Preparing"
       ? 1
@@ -1652,46 +1191,26 @@ function Journey({ status }) {
 
   return (
     <div className="journey">
-
       <div className="journey-line">
-
         <span
           style={{
-            width: `${
-              (index / 3) * 100
-            }%`,
+            width: `${(index / 3) * 100}%`,
           }}
         />
-
       </div>
 
       {JOURNEY.map((x, i) => (
-
         <div
-          className={`journey-step ${
-            i <= index
-              ? "active"
-              : ""
-          }`}
+          className={`journey-step ${i <= index ? "active" : ""}`}
           key={x}
         >
-
           <div className="journey-dot">
-
-            {i <= index
-              ? "✓"
-              : i + 1}
-
+            {i <= index ? "✓" : i + 1}
           </div>
 
-          <span>
-            {x.toUpperCase()}
-          </span>
-
+          <span>{x.toUpperCase()}</span>
         </div>
-
       ))}
-
     </div>
   );
 }
@@ -1701,49 +1220,32 @@ function Journey({ status }) {
 ========================= */
 
 function Orders() {
-
-  const [orders, setOrders] =
-    useState([]);
-
-  const [loading, setLoading] =
-    useState(true);
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadOrders();
   }, []);
 
   async function loadOrders() {
-
     try {
-
       setLoading(true);
 
-      const res =
-        await api.get(
-          "/orders/my"
-        );
+      const res = await api.get("/orders/my");
 
-      setOrders(
-        res.data || []
-      );
-
+      setOrders(res.data || []);
     } catch (err) {
-
       notify(
         err.response?.data?.message ||
           "Failed to load order history",
         "error"
       );
-
     } finally {
-
       setLoading(false);
-
     }
   }
 
   function statusClass(s) {
-
     return s === "Delivered"
       ? "status delivered"
       : s === "Cancelled"
@@ -1759,213 +1261,121 @@ function Orders() {
 
   return (
     <div className="page-bg">
-
       <div className="container py-5">
-
         <div className="section-heading d-flex justify-content-between align-items-end flex-wrap gap-3">
-
           <div>
+            <span>🛵 CRAVE JOURNEY</span>
 
-            <span>
-              🛵 CRAVE JOURNEY
-            </span>
-
-            <h2>
-              Order History
-            </h2>
+            <h2>Order History</h2>
 
             <p>
               Follow every craving from thought to doorstep.
             </p>
-
           </div>
 
-          <button
-            className="refresh-btn"
-            onClick={loadOrders}
-          >
+          <button className="refresh-btn" onClick={loadOrders}>
             ↻ Refresh
           </button>
-
         </div>
 
         {latest && (
-
           <div className="journey-hero">
-
             <div>
-
               <span className="section-kicker">
-                LATEST CRAVE · #
-                {latest._id.slice(-6)}
+                LATEST CRAVE · #{latest._id.slice(-6)}
               </span>
 
               <h3>
-                {latest.status ===
-                "Delivered"
+                {latest.status === "Delivered"
                   ? "That craving made it home."
                   : "Your craving is moving."}
               </h3>
-
             </div>
 
-            <span
-              className={statusClass(
-                latest.status
-              )}
-            >
-              {latest.status ||
-                "Pending"}
+            <span className={statusClass(latest.status)}>
+              {latest.status || "Pending"}
             </span>
 
-            <Journey
-              status={
-                latest.status
-              }
-            />
-
+            <Journey status={latest.status} />
           </div>
-
         )}
 
         {loading && (
-
           <div className="empty-box">
-
             <div className="spinner-border" />
 
             <p className="mt-3">
               Loading your cravings...
             </p>
-
           </div>
+        )}
 
+        {!loading && !orders.length && (
+          <div className="empty-box smart-empty">
+            <div className="empty-orbit">🛵</div>
+
+            <span className="section-kicker">
+              CRAVE JOURNEY
+            </span>
+
+            <h4>Your first journey starts here.</h4>
+
+            <p>
+              Place an order and watch it move from Craved to At
+              Your Door.
+            </p>
+
+            <Link to="/" className="crave-btn">
+              Find a Crave ✦
+            </Link>
+          </div>
         )}
 
         {!loading &&
-          !orders.length && (
-
-            <div className="empty-box smart-empty">
-
-              <div className="empty-orbit">
-                🛵
-              </div>
-
-              <span className="section-kicker">
-                CRAVE JOURNEY
-              </span>
-
-              <h4>
-                Your first journey starts here.
-              </h4>
-
-              <p>
-                Place an order and watch it move from Craved to At Your Door.
-              </p>
-
-              <Link
-                to="/"
-                className="crave-btn"
-              >
-                Find a Crave ✦
-              </Link>
-
-            </div>
-
-          )}
-
-        {!loading &&
           orders.map((o, i) => (
-
-            <div
-              className="order-card"
-              key={o._id}
-            >
-
+            <div className="order-card" key={o._id}>
               <div className="order-top">
-
                 <div>
+                  <small>ORDER {i + 1}</small>
 
-                  <small>
-                    ORDER {i + 1}
-                  </small>
-
-                  <h5>
-                    #{o._id.slice(-6)}
-                  </h5>
-
+                  <h5>#{o._id.slice(-6)}</h5>
                 </div>
 
-                <span
-                  className={statusClass(
-                    o.status
-                  )}
-                >
-                  {o.status ||
-                    "Pending"}
+                <span className={statusClass(o.status)}>
+                  {o.status || "Pending"}
                 </span>
 
-                <strong>
-                  ₹{o.totalAmount}
-                </strong>
-
+                <strong>₹{o.totalAmount}</strong>
               </div>
 
-              <Journey
-                status={o.status}
-              />
+              <Journey status={o.status} />
 
               <div className="order-items">
+                {o.items?.map((item, j) => (
+                  <div className="order-item" key={j}>
+                    <span>
+                      {item.name} × {item.quantity}
+                    </span>
 
-                {o.items?.map(
-                  (item, j) => (
-
-                    <div
-                      className="order-item"
-                      key={j}
-                    >
-
-                      <span>
-                        {item.name} ×{" "}
-                        {item.quantity}
-                      </span>
-
-                      <strong>
-                        ₹
-                        {Number(
-                          item.price
-                        ) *
-                          Number(
-                            item.quantity
-                          )}
-                      </strong>
-
-                    </div>
-
-                  )
-                )}
-
+                    <strong>
+                      ₹
+                      {Number(item.price) *
+                        Number(item.quantity)}
+                    </strong>
+                  </div>
+                ))}
               </div>
 
               <div className="order-address">
-
-                <small>
-                  DELIVERY ADDRESS
-                </small>
+                <small>DELIVERY ADDRESS</small>
 
                 <p>
-                  {o.address ||
-                    "Address not available"}
+                  {o.address || "Address not available"}
                 </p>
-
               </div>
-
             </div>
-
           ))}
-
       </div>
-
     </div>
   );
 }
@@ -1975,119 +1385,76 @@ function Orders() {
 ========================= */
 
 function Profile() {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+  });
 
-  const [form, setForm] =
-    useState({
-      name: "",
-      email: "",
-    });
-
-  const [orders, setOrders] =
-    useState([]);
+  const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-
     (async () => {
-
       try {
-
-        const [r, o] =
-          await Promise.all([
-            api.get(
-              "/users/profile"
-            ),
-            api.get(
-              "/orders/my"
-            ),
-          ]);
+        const [r, o] = await Promise.all([
+          api.get("/users/profile"),
+          api.get("/orders/my"),
+        ]);
 
         setForm({
-          name:
-            r.data.name || "",
-          email:
-            r.data.email || "",
+          name: r.data.name || "",
+          email: r.data.email || "",
         });
 
-        setOrders(
-          o.data || []
-        );
-
+        setOrders(o.data || []);
       } catch (e) {
-
         console.log(e);
-
       }
-
     })();
-
   }, []);
 
   async function update(e) {
-
     e.preventDefault();
 
     try {
-
-      await api.put(
-        "/users/profile",
-        {
-          name: form.name,
-        }
-      );
+      await api.put("/users/profile", {
+        name: form.name,
+      });
 
       notify(
         "Profile updated. Your CraveHub space is fresh."
       );
-
     } catch (err) {
-
       notify(
         err.response?.data?.message ||
           "Failed to update profile",
         "error"
       );
-
     }
   }
 
   const count = orders.length;
 
-  const delivered =
-    orders.filter(
-      (o) =>
-        o.status === "Delivered"
-    ).length;
+  const delivered = orders.filter(
+    (o) => o.status === "Delivered"
+  ).length;
 
   return (
     <div className="auth-page">
-
       <div className="profile-layout">
-
         <div className="auth-card profile-card">
-
-          <div className="auth-brand">
-            CraveHub
-          </div>
+          <div className="auth-brand">CraveHub</div>
 
           <span className="section-kicker centered">
             💜 CRAVE DNA
           </span>
 
-          <h1>
-            My Profile
-          </h1>
+          <h1>My Profile</h1>
 
-          <p>
-            Keep your account details fresh.
-          </p>
+          <p>Keep your account details fresh.</p>
 
           <form onSubmit={update}>
-
             <div className="input-group-modern">
-
-              <label>
-                Name
-              </label>
+              <label>Name</label>
 
               <input
                 value={form.name}
@@ -2098,56 +1465,35 @@ function Profile() {
                   })
                 }
               />
-
             </div>
 
             <div className="input-group-modern">
+              <label>Email</label>
 
-              <label>
-                Email
-              </label>
-
-              <input
-                value={form.email}
-                disabled
-              />
-
+              <input value={form.email} disabled />
             </div>
 
             <button className="auth-btn">
-
               Update Profile
               <span>→</span>
-
             </button>
-
           </form>
-
         </div>
 
         <div className="dna-profile-card">
-
           <span className="section-kicker">
             YOUR CRAVE DNA
           </span>
 
-          <h2>
-            {form.name ||
-              "Crave Explorer"}
-          </h2>
+          <h2>{form.name || "Crave Explorer"}</h2>
 
-          <p>
-            Your taste, your journey, your badges.
-          </p>
+          <p>Your taste, your journey, your badges.</p>
 
           <div className="score-ring">
-
             <strong>
               {Math.min(
                 99,
-                count * 12 +
-                  delivered * 8 +
-                  20
+                count * 12 + delivered * 8 + 20
               )}
             </strong>
 
@@ -2156,72 +1502,43 @@ function Profile() {
               <br />
               SCORE
             </span>
-
           </div>
 
           <div className="profile-badges">
+            <span>🏆 First Crave</span>
 
-            <span>
-              🏆 First Crave
-            </span>
+            <span>🌶️ Spice Seeker</span>
 
-            <span>
-              🌶️ Spice Seeker
-            </span>
-
-            <span>
-              🗺️ Food Explorer
-            </span>
+            <span>🗺️ Food Explorer</span>
 
             {count >= 5 && (
-              <span>
-                🔥 Crave Streak
-              </span>
+              <span>🔥 Crave Streak</span>
             )}
-
           </div>
 
           <div className="profile-stats">
+            <div>
+              <strong>{count}</strong>
+
+              <small>ORDERS</small>
+            </div>
 
             <div>
-              <strong>
-                {count}
-              </strong>
+              <strong>{delivered}</strong>
 
-              <small>
-                ORDERS
-              </small>
+              <small>DELIVERED</small>
             </div>
 
             <div>
               <strong>
-                {delivered}
+                {Math.max(1, Math.min(7, count))}
               </strong>
 
-              <small>
-                DELIVERED
-              </small>
+              <small>STREAK</small>
             </div>
-
-            <div>
-              <strong>
-                {Math.max(
-                  1,
-                  Math.min(7, count)
-                )}
-              </strong>
-
-              <small>
-                STREAK
-              </small>
-            </div>
-
           </div>
-
         </div>
-
       </div>
-
     </div>
   );
 }
@@ -2231,81 +1548,52 @@ function Profile() {
 ========================= */
 
 function Admin() {
+  const [foods, setFoods] = useState([]);
+  const [orders, setOrders] = useState([]);
+  const [users, setUsers] = useState([]);
 
-  const [foods, setFoods] =
-    useState([]);
+  const [form, setForm] = useState({
+    name: "",
+    description: "",
+    price: "",
+    category: "",
+    image: "",
+  });
 
-  const [orders, setOrders] =
-    useState([]);
-
-  const [users, setUsers] =
-    useState([]);
-
-  const [form, setForm] =
-    useState({
-      name: "",
-      description: "",
-      price: "",
-      category: "",
-      image: "",
-    });
-
-  const [preview, setPreview] =
-    useState(null);
+  const [preview, setPreview] = useState(null);
 
   useEffect(() => {
     loadData();
   }, []);
 
   async function loadData() {
-
     try {
+      const [f, o, u] = await Promise.all([
+        api.get("/foods"),
+        api.get("/orders"),
+        api.get("/users"),
+      ]);
 
-      const [f, o, u] =
-        await Promise.all([
-          api.get("/foods"),
-          api.get("/orders"),
-          api.get("/users"),
-        ]);
-
-      setFoods(
-        f.data || []
-      );
-
-      setOrders(
-        o.data || []
-      );
-
-      setUsers(
-        u.data || []
-      );
-
+      setFoods(f.data || []);
+      setOrders(o.data || []);
+      setUsers(u.data || []);
     } catch (err) {
-
       notify(
         err.response?.data?.message ||
           "Failed to load admin data",
         "error"
       );
-
     }
   }
 
   async function addFood(e) {
-
     e.preventDefault();
 
     try {
-
-      await api.post(
-        "/foods",
-        {
-          ...form,
-          price: Number(
-            form.price
-          ),
-        }
-      );
+      await api.post("/foods", {
+        ...form,
+        price: Number(form.price),
+      });
 
       setForm({
         name: "",
@@ -2317,54 +1605,38 @@ function Admin() {
 
       await loadData();
 
-      notify(
-        "New food added to the CraveHub menu."
-      );
-
+      notify("New food added to the CraveHub menu.");
     } catch (err) {
-
       notify(
         err.response?.data?.message ||
           "Failed to add food",
         "error"
       );
-
     }
   }
 
   async function editFood(food) {
-
-    const name = prompt(
-      "Food name:",
-      food.name
-    );
+    const name = prompt("Food name:", food.name);
 
     if (name === null) return;
 
-    const category =
-      prompt(
-        "Category:",
-        food.category || ""
-      );
-
-    if (category === null)
-      return;
-
-    const price = prompt(
-      "Price:",
-      food.price
+    const category = prompt(
+      "Category:",
+      food.category || ""
     );
+
+    if (category === null) return;
+
+    const price = prompt("Price:", food.price);
 
     if (price === null) return;
 
-    const description =
-      prompt(
-        "Description:",
-        food.description || ""
-      );
+    const description = prompt(
+      "Description:",
+      food.description || ""
+    );
 
-    if (description === null)
-      return;
+    if (description === null) return;
 
     const image = prompt(
       "Image URL:",
@@ -2374,204 +1646,129 @@ function Admin() {
     if (image === null) return;
 
     try {
-
-      await api.put(
-        `/foods/${food._id}`,
-        {
-          name,
-          category,
-          price: Number(price),
-          description,
-          image,
-        }
-      );
+      await api.put(`/foods/${food._id}`, {
+        name,
+        category,
+        price: Number(price),
+        description,
+        image,
+      });
 
       await loadData();
 
       notify(
         "Food details updated successfully."
       );
-
     } catch (err) {
-
       notify(
         err.response?.data?.message ||
           "Failed to update food",
         "error"
       );
-
     }
   }
 
   async function deleteFood(id) {
-
-    if (
-      !window.confirm(
-        "Delete this food?"
-      )
-    )
-      return;
+    if (!window.confirm("Delete this food?")) return;
 
     try {
-
-      await api.delete(
-        `/foods/${id}`
-      );
+      await api.delete(`/foods/${id}`);
 
       await loadData();
 
-      notify(
-        "Food removed from the menu."
-      );
-
+      notify("Food removed from the menu.");
     } catch (err) {
-
       notify(
         err.response?.data?.message ||
           "Failed to delete food",
         "error"
       );
-
     }
   }
 
-  async function updateOrder(
-    id,
-    status
-  ) {
-
+  async function updateOrder(id, status) {
     try {
-
-      await api.put(
-        `/orders/${id}/status`,
-        { status }
-      );
+      await api.put(`/orders/${id}/status`, {
+        status,
+      });
 
       await loadData();
 
-      notify(
-        `Order status changed to ${status}.`
-      );
-
+      notify(`Order status changed to ${status}.`);
     } catch (err) {
-
       notify(
         err.response?.data?.message ||
           "Failed to update order",
         "error"
       );
-
     }
   }
 
   return (
     <div className="page-bg">
-
       <div className="container py-5">
-
         <div className="section-heading">
+          <span>👨‍🍳 CRAVEHUB CONTROL CENTER</span>
 
-          <span>
-            👨‍🍳 CRAVEHUB CONTROL CENTER
-          </span>
-
-          <h2>
-            Admin Dashboard
-          </h2>
+          <h2>Admin Dashboard</h2>
 
           <p>
             A cleaner command center for food, orders and people.
           </p>
-
         </div>
 
         <div className="stats-grid">
-
           <div className="stat-card violet">
-
             <span>🍔</span>
 
-            <small>
-              FOODS
-            </small>
+            <small>FOODS</small>
 
-            <strong>
-              {foods.length}
-            </strong>
+            <strong>{foods.length}</strong>
 
-            <p>
-              Menu ready to crave
-            </p>
-
+            <p>Menu ready to crave</p>
           </div>
 
           <div className="stat-card apricot">
-
             <span>📦</span>
 
-            <small>
-              ORDERS
-            </small>
+            <small>ORDERS</small>
 
-            <strong>
-              {orders.length}
-            </strong>
+            <strong>{orders.length}</strong>
 
-            <p>
-              Journeys in the system
-            </p>
-
+            <p>Journeys in the system</p>
           </div>
 
           <div className="stat-card ink">
-
             <span>👥</span>
 
-            <small>
-              USERS
-            </small>
+            <small>USERS</small>
 
-            <strong>
-              {users.length}
-            </strong>
+            <strong>{users.length}</strong>
 
-            <p>
-              Crave community
-            </p>
-
+            <p>Crave community</p>
           </div>
-
         </div>
 
         <div className="admin-card admin-form-card">
-
           <div className="admin-section-head">
-
             <div>
-
               <span className="section-kicker">
                 MENU BUILDER
               </span>
 
-              <h4>
-                Add New Food
-              </h4>
-
+              <h4>Add New Food</h4>
             </div>
 
             <span className="admin-chip">
               LIVE MENU
             </span>
-
           </div>
 
           <form
             onSubmit={addFood}
             className="row g-3 mt-1"
           >
-
             <div className="col-md-6">
-
               <input
                 className="form-control modern-control"
                 placeholder="Food name"
@@ -2584,11 +1781,9 @@ function Admin() {
                 }
                 required
               />
-
             </div>
 
             <div className="col-md-6">
-
               <input
                 className="form-control modern-control"
                 placeholder="Category"
@@ -2596,17 +1791,14 @@ function Admin() {
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    category:
-                      e.target.value,
+                    category: e.target.value,
                   })
                 }
                 required
               />
-
             </div>
 
             <div className="col-md-6">
-
               <input
                 className="form-control modern-control"
                 type="number"
@@ -2615,17 +1807,14 @@ function Admin() {
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    price:
-                      e.target.value,
+                    price: e.target.value,
                   })
                 }
                 required
               />
-
             </div>
 
             <div className="col-md-6">
-
               <input
                 className="form-control modern-control"
                 placeholder="Image URL"
@@ -2633,16 +1822,13 @@ function Admin() {
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    image:
-                      e.target.value,
+                    image: e.target.value,
                   })
                 }
               />
-
             </div>
 
             <div className="col-12">
-
               <textarea
                 className="form-control modern-control"
                 placeholder="Description"
@@ -2650,116 +1836,71 @@ function Admin() {
                 onChange={(e) =>
                   setForm({
                     ...form,
-                    description:
-                      e.target.value,
+                    description: e.target.value,
                   })
                 }
               />
-
             </div>
 
             <div className="col-12">
-
               <button className="auth-btn admin-add-btn">
                 + Add Food to Menu
               </button>
-
             </div>
-
           </form>
-
         </div>
 
         <div className="admin-card">
-
           <div className="admin-section-head">
-
             <div>
-
               <span className="section-kicker">
                 FOOD PREVIEW
               </span>
 
-              <h4>
-                Menu Management
-              </h4>
-
+              <h4>Menu Management</h4>
             </div>
 
             <span className="admin-chip">
               {foods.length} ITEMS
             </span>
-
           </div>
 
           <div className="admin-food-grid">
-
             {foods.map((f) => (
-
-              <div
-                className="admin-food-mini"
-                key={f._id}
-              >
-
+              <div className="admin-food-mini" key={f._id}>
                 <div className="admin-mini-image">
-
                   {f.image ? (
-                    <img
-                      src={f.image}
-                      alt=""
-                    />
+                    <img src={f.image} alt="" />
                   ) : (
                     <span>🍔</span>
                   )}
-
                 </div>
 
                 <div>
-
-                  <strong>
-                    {f.name}
-                  </strong>
+                  <strong>{f.name}</strong>
 
                   <small>
-                    {f.category} · ₹
-                    {f.price}
+                    {f.category} · ₹{f.price}
                   </small>
-
                 </div>
 
                 <div className="admin-mini-actions">
-
-                  <button
-                    onClick={() =>
-                      setPreview(f)
-                    }
-                  >
+                  <button onClick={() => setPreview(f)}>
                     Preview
                   </button>
 
-                  <button
-                    onClick={() =>
-                      editFood(f)
-                    }
-                  >
+                  <button onClick={() => editFood(f)}>
                     Edit
                   </button>
 
                   <button
                     className="danger-mini"
-                    onClick={() =>
-                      deleteFood(
-                        f._id
-                      )
-                    }
+                    onClick={() => deleteFood(f._id)}
                   >
                     Delete
                   </button>
-
                 </div>
-
               </div>
-
             ))}
 
             {!foods.length && (
@@ -2767,56 +1908,37 @@ function Admin() {
                 No food items yet.
               </div>
             )}
-
           </div>
-
         </div>
 
         <div className="admin-card">
-
           <div className="admin-section-head">
-
             <div>
-
               <span className="section-kicker">
                 ORDER VISUALS
               </span>
 
-              <h4>
-                Manage Orders
-              </h4>
-
+              <h4>Manage Orders</h4>
             </div>
-
           </div>
 
           <div className="admin-order-list">
-
             {orders.map((o) => (
-
               <div
                 className="admin-order-row"
                 key={o._id}
               >
-
                 <div>
+                  <strong>#{o._id.slice(-6)}</strong>
 
-                  <strong>
-                    #{o._id.slice(-6)}
-                  </strong>
-
-                  <small>
-                    {o.address}
-                  </small>
-
+                  <small>{o.address}</small>
                 </div>
 
                 <span
                   className={
                     o.status === "Delivered"
                       ? "status delivered"
-                      : o.status ===
-                        "Preparing"
+                      : o.status === "Preparing"
                       ? "status preparing"
                       : o.status ===
                         "Out for Delivery"
@@ -2824,20 +1946,14 @@ function Admin() {
                       : "status pending"
                   }
                 >
-                  {o.status ||
-                    "Pending"}
+                  {o.status || "Pending"}
                 </span>
 
-                <strong>
-                  ₹{o.totalAmount}
-                </strong>
+                <strong>₹{o.totalAmount}</strong>
 
                 <select
                   className="form-select"
-                  value={
-                    o.status ||
-                    "Pending"
-                  }
+                  value={o.status || "Pending"}
                   onChange={(e) =>
                     updateOrder(
                       o._id,
@@ -2845,30 +1961,17 @@ function Admin() {
                     )
                   }
                 >
-                  <option>
-                    Pending
-                  </option>
+                  <option>Pending</option>
 
-                  <option>
-                    Preparing
-                  </option>
+                  <option>Preparing</option>
 
-                  <option>
-                    Out for Delivery
-                  </option>
+                  <option>Out for Delivery</option>
 
-                  <option>
-                    Delivered
-                  </option>
+                  <option>Delivered</option>
 
-                  <option>
-                    Cancelled
-                  </option>
-
+                  <option>Cancelled</option>
                 </select>
-
               </div>
-
             ))}
 
             {!orders.length && (
@@ -2876,35 +1979,23 @@ function Admin() {
                 No orders yet.
               </div>
             )}
-
           </div>
-
         </div>
 
         <div className="admin-card">
-
           <div className="admin-section-head">
-
             <div>
-
               <span className="section-kicker">
                 CRAVE COMMUNITY
               </span>
 
-              <h4>
-                Registered Users
-              </h4>
-
+              <h4>Registered Users</h4>
             </div>
-
           </div>
 
           <div className="table-responsive">
-
             <table className="table admin-table">
-
               <thead>
-
                 <tr>
                   <th>#</th>
                   <th>Name</th>
@@ -2912,33 +2003,20 @@ function Admin() {
                   <th>Phone</th>
                   <th>Role</th>
                 </tr>
-
               </thead>
 
               <tbody>
-
                 {users.map((u, i) => (
-
                   <tr key={u._id}>
+                    <td>{i + 1}</td>
+
+                    <td>{u.name || "-"}</td>
+
+                    <td>{u.email || "-"}</td>
+
+                    <td>{u.phone || "-"}</td>
 
                     <td>
-                      {i + 1}
-                    </td>
-
-                    <td>
-                      {u.name || "-"}
-                    </td>
-
-                    <td>
-                      {u.email || "-"}
-                    </td>
-
-                    <td>
-                      {u.phone || "-"}
-                    </td>
-
-                    <td>
-
                       <span
                         className={`role-badge ${
                           u.role === "admin"
@@ -2946,48 +2024,32 @@ function Admin() {
                             : ""
                         }`}
                       >
-                        {u.role ||
-                          "user"}
+                        {u.role || "user"}
                       </span>
-
                     </td>
-
                   </tr>
-
                 ))}
 
                 {!users.length && (
-
                   <tr>
-
                     <td
                       colSpan="5"
                       className="text-center"
                     >
                       No users
                     </td>
-
                   </tr>
-
                 )}
-
               </tbody>
-
             </table>
-
           </div>
-
         </div>
-
       </div>
 
       {preview && (
-
         <QuickPreview
           food={preview}
-          onClose={() =>
-            setPreview(null)
-          }
+          onClose={() => setPreview(null)}
           onAdd={() =>
             notify(
               "Preview only — use the customer menu to add items.",
@@ -2995,9 +2057,7 @@ function Admin() {
             )
           }
         />
-
       )}
-
     </div>
   );
 }
@@ -3007,42 +2067,26 @@ function Admin() {
 ========================= */
 
 function App() {
-
-  const [user, setUser] =
-    useState(() => {
-
-      try {
-
-        return JSON.parse(
-          localStorage.getItem(
-            "user"
-          )
-        );
-
-      } catch {
-
-        return null;
-
-      }
-
-    });
+  const [user, setUser] = useState(() => {
+    try {
+      return JSON.parse(
+        localStorage.getItem("user")
+      );
+    } catch {
+      return null;
+    }
+  });
 
   return (
     <>
-      <Navbar
-        user={user}
-        setUser={setUser}
-      />
+      <Navbar user={user} setUser={setUser} />
 
       <PopupHost />
 
       <Routes>
-
         <Route
           path="/"
-          element={
-            <Home user={user} />
-          }
+          element={<Home user={user} />}
         />
 
         <Route
@@ -3084,7 +2128,6 @@ function App() {
           path="/admin"
           element={<Admin />}
         />
-
       </Routes>
     </>
   );
