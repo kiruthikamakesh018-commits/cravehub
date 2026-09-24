@@ -23,6 +23,40 @@ const METER_LEVELS = [
   { key: "Extreme", emoji: "🔥", text: "DROP EVERYTHING. FEED ME." },
 ];
 
+/* =========================
+   IMAGE HELPER
+========================= */
+
+function getFoodImage(food) {
+  const imageUrl = food?.image?.trim();
+
+  if (imageUrl) {
+    return imageUrl;
+  }
+
+  return "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80";
+}
+
+/* =========================
+   CRAVEHUB LOGO
+========================= */
+
+function CraveLogo() {
+  return (
+    <div className="crave-logo">
+      <div className="crave-logo-icon">🍴</div>
+
+      <div className="crave-logo-name">
+        <span>Crave</span>Hub
+      </div>
+    </div>
+  );
+}
+
+/* =========================
+   NOTIFICATION
+========================= */
+
 function notify(message, type = "success") {
   window.dispatchEvent(
     new CustomEvent("cravehub:notify", {
@@ -137,8 +171,7 @@ function Navbar({ user, setUser }) {
           to="/"
           onClick={() => setMobileOpen(false)}
         >
-          <span className="brand-dot" />
-          CraveHub
+          <CraveLogo />
         </Link>
 
         <button
@@ -254,15 +287,21 @@ function QuickPreview({ food, onClose, onAdd }) {
         </button>
 
         <div className="preview-image">
-          {food.image ? (
-            <img src={food.image} alt={food.name} />
-          ) : (
-            <span>🍔</span>
-          )}
+          <img
+            src={getFoodImage(food)}
+            alt={food.name}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src =
+                "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80";
+            }}
+          />
         </div>
 
         <div className="preview-copy">
-          <span className="mini-tag">{food.category || "Food"}</span>
+          <span className="mini-tag">
+            {food.category || "Food"}
+          </span>
 
           <h2>{food.name}</h2>
 
@@ -274,7 +313,10 @@ function QuickPreview({ food, onClose, onAdd }) {
           <div className="preview-footer">
             <strong>₹{food.price}</strong>
 
-            <button className="crave-btn" onClick={() => onAdd(food)}>
+            <button
+              className="crave-btn"
+              onClick={() => onAdd(food)}
+            >
               Add to Crave
             </button>
           </div>
@@ -406,7 +448,8 @@ function Home({ user }) {
     setSurprise("spinning");
 
     setTimeout(() => {
-      const item = foods[Math.floor(Math.random() * foods.length)];
+      const item =
+        foods[Math.floor(Math.random() * foods.length)];
 
       setSurprise(item);
     }, 900);
@@ -414,23 +457,16 @@ function Home({ user }) {
 
   const categories = [
     "All",
-    ...new Set(foods.map((f) => f.category).filter(Boolean)),
+    ...new Set(
+      foods.map((f) => f.category).filter(Boolean)
+    ),
   ];
 
-  /*
-   * IMPORTANT FIX:
-   *
-   * Search and category filter the menu.
-   * Mood and Crave Meter no longer hide every food item.
-   *
-   * This means your API foods will always be visible unless
-   * the user actually searches or selects a category.
-   */
   const filteredFoods = foods.filter((food) => {
     const hay =
-      `${food.name || ""} ${food.description || ""} ${
-        food.category || ""
-      }`.toLowerCase();
+      `${food.name || ""} ${
+        food.description || ""
+      } ${food.category || ""}`.toLowerCase();
 
     const searchMatch = hay.includes(search.toLowerCase());
 
@@ -466,7 +502,10 @@ function Home({ user }) {
               </a>
 
               {!user && (
-                <Link to="/register" className="btn hero-outline-btn">
+                <Link
+                  to="/register"
+                  className="btn hero-outline-btn"
+                >
                   Join CraveHub
                 </Link>
               )}
@@ -487,7 +526,9 @@ function Home({ user }) {
             <div className="hero-food-card">
               <div className="hero-food-emoji">🍜</div>
 
-              <span className="hero-card-label">TONIGHT'S CRAVE</span>
+              <span className="hero-card-label">
+                TONIGHT'S CRAVE
+              </span>
 
               <h4>Something delicious</h4>
 
@@ -504,7 +545,9 @@ function Home({ user }) {
           <div className="crave-control-card meter-card">
             <div className="control-head">
               <div>
-                <span className="section-kicker">🧠 CRAVE METER</span>
+                <span className="section-kicker">
+                  🧠 CRAVE METER
+                </span>
 
                 <h3>How intense is it?</h3>
               </div>
@@ -630,7 +673,6 @@ function Home({ user }) {
           </div>
         </div>
 
-        {/* MENU */}
         <div className="row g-4 mt-2">
           {filteredFoods.length === 0 ? (
             <div className="empty-box smart-empty">
@@ -642,9 +684,7 @@ function Home({ user }) {
 
               <h4>No match for this craving.</h4>
 
-              <p>
-                Try another category or clear your search.
-              </p>
+              <p>Try another category or clear your search.</p>
 
               <button
                 className="ghost-btn"
@@ -669,11 +709,15 @@ function Home({ user }) {
                   onClick={() => setPreview(food)}
                 >
                   <div className="food-image-wrap">
-                    {food.image ? (
-                      <img src={food.image} alt={food.name} />
-                    ) : (
-                      <div className="food-placeholder">🍔</div>
-                    )}
+                    <img
+                      src={getFoodImage(food)}
+                      alt={food.name}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src =
+                          "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80";
+                      }}
+                    />
 
                     <span className="food-category">
                       {food.category || "Food"}
@@ -754,17 +798,20 @@ function Home({ user }) {
               </>
             ) : (
               <>
-                <span className="mini-tag">YOUR RANDOM CRAVE</span>
+                <span className="mini-tag">
+                  YOUR RANDOM CRAVE
+                </span>
 
                 <div className="surprise-food-image">
-                  {surprise.image ? (
-                    <img
-                      src={surprise.image}
-                      alt={surprise.name}
-                    />
-                  ) : (
-                    <span>🍔</span>
-                  )}
+                  <img
+                    src={getFoodImage(surprise)}
+                    alt={surprise.name}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src =
+                        "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80";
+                    }}
+                  />
                 </div>
 
                 <h2>{surprise.name}</h2>
@@ -851,7 +898,8 @@ function Auth({ type, setUser }) {
       console.error("Login/Register error:", err);
 
       notify(
-        err.response?.data?.message || "Something went wrong",
+        err.response?.data?.message ||
+          "Something went wrong",
         "error"
       );
     }
@@ -863,7 +911,9 @@ function Auth({ type, setUser }) {
       <div className="auth-blob blob-b" />
 
       <div className="auth-card">
-        <div className="auth-brand">CraveHub</div>
+        <div className="auth-brand">
+          <CraveLogo />
+        </div>
 
         <span className="section-kicker centered">
           YOUR CRAVING SPACE
@@ -934,12 +984,17 @@ function Auth({ type, setUser }) {
 
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
+                className="password-eye"
+                onClick={() =>
+                  setShowPassword(!showPassword)
+                }
                 aria-label={
-                  showPassword ? "Hide password" : "Show password"
+                  showPassword
+                    ? "Hide password"
+                    : "Show password"
                 }
               >
-                {showPassword ? "◉" : "◌"}
+                👁️
               </button>
             </div>
           </div>
@@ -985,6 +1040,7 @@ function Cart() {
 
   function saveCart(c) {
     setCart(c);
+
     localStorage.setItem("cart", JSON.stringify(c));
   }
 
@@ -1041,6 +1097,7 @@ function Cart() {
           price: i.price,
           quantity: i.quantity,
         })),
+
         totalAmount: total,
         address,
       });
@@ -1053,7 +1110,8 @@ function Cart() {
       window.setTimeout(() => nav("/orders"), 1400);
     } catch (err) {
       notify(
-        err.response?.data?.message || "Failed to place order",
+        err.response?.data?.message ||
+          "Failed to place order",
         "error"
       );
     }
@@ -1080,9 +1138,7 @@ function Cart() {
 
             <h4>Your cart is waiting for a craving.</h4>
 
-            <p>
-              Explore the menu and give it something to carry.
-            </p>
+            <p>Explore the menu and give it something to carry.</p>
 
             <Link to="/" className="crave-btn">
               Browse Food ✦
@@ -1094,11 +1150,15 @@ function Cart() {
               <div className="cart-card" key={item._id}>
                 <div className="cart-food">
                   <div className="cart-thumb">
-                    {item.image ? (
-                      <img src={item.image} alt="" />
-                    ) : (
-                      "🍔"
-                    )}
+                    <img
+                      src={getFoodImage(item)}
+                      alt={item.name}
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        e.currentTarget.src =
+                          "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80";
+                      }}
+                    />
                   </div>
 
                   <div>
@@ -1201,7 +1261,9 @@ function Journey({ status }) {
 
       {JOURNEY.map((x, i) => (
         <div
-          className={`journey-step ${i <= index ? "active" : ""}`}
+          className={`journey-step ${
+            i <= index ? "active" : ""
+          }`}
           key={x}
         >
           <div className="journey-dot">
@@ -1321,8 +1383,8 @@ function Orders() {
             <h4>Your first journey starts here.</h4>
 
             <p>
-              Place an order and watch it move from Craved to At
-              Your Door.
+              Place an order and watch it move from Craved to At Your
+              Door.
             </p>
 
             <Link to="/" className="crave-btn">
@@ -1358,9 +1420,7 @@ function Orders() {
                     </span>
 
                     <strong>
-                      ₹
-                      {Number(item.price) *
-                        Number(item.quantity)}
+                      ₹{Number(item.price) * Number(item.quantity)}
                     </strong>
                   </div>
                 ))}
@@ -1442,7 +1502,9 @@ function Profile() {
     <div className="auth-page">
       <div className="profile-layout">
         <div className="auth-card profile-card">
-          <div className="auth-brand">CraveHub</div>
+          <div className="auth-brand">
+            <CraveLogo />
+          </div>
 
           <span className="section-kicker centered">
             💜 CRAVE DNA
@@ -1506,9 +1568,7 @@ function Profile() {
 
           <div className="profile-badges">
             <span>🏆 First Crave</span>
-
             <span>🌶️ Spice Seeker</span>
-
             <span>🗺️ Food Explorer</span>
 
             {count >= 5 && (
@@ -1519,13 +1579,11 @@ function Profile() {
           <div className="profile-stats">
             <div>
               <strong>{count}</strong>
-
               <small>ORDERS</small>
             </div>
 
             <div>
               <strong>{delivered}</strong>
-
               <small>DELIVERED</small>
             </div>
 
@@ -1592,6 +1650,7 @@ function Admin() {
     try {
       await api.post("/foods", {
         ...form,
+        image: form.image.trim(),
         price: Number(form.price),
       });
 
@@ -1616,7 +1675,10 @@ function Admin() {
   }
 
   async function editFood(food) {
-    const name = prompt("Food name:", food.name);
+    const name = prompt(
+      "Food name:",
+      food.name
+    );
 
     if (name === null) return;
 
@@ -1627,7 +1689,10 @@ function Admin() {
 
     if (category === null) return;
 
-    const price = prompt("Price:", food.price);
+    const price = prompt(
+      "Price:",
+      food.price
+    );
 
     if (price === null) return;
 
@@ -1645,14 +1710,29 @@ function Admin() {
 
     if (image === null) return;
 
+    const imageUrl = image.trim();
+
+    console.log("UPDATING FOOD:", {
+      id: food._id,
+      image: imageUrl,
+    });
+
     try {
-      await api.put(`/foods/${food._id}`, {
-        name,
-        category,
-        price: Number(price),
-        description,
-        image,
-      });
+      const res = await api.put(
+        `/foods/${food._id}`,
+        {
+          name: name.trim(),
+          category: category.trim(),
+          price: Number(price),
+          description: description.trim(),
+          image: imageUrl,
+        }
+      );
+
+      console.log(
+        "UPDATED FOOD RESPONSE:",
+        res.data
+      );
 
       await loadData();
 
@@ -1660,6 +1740,11 @@ function Admin() {
         "Food details updated successfully."
       );
     } catch (err) {
+      console.error(
+        "UPDATE FOOD ERROR:",
+        err.response?.data || err
+      );
+
       notify(
         err.response?.data?.message ||
           "Failed to update food",
@@ -1720,31 +1805,22 @@ function Admin() {
         <div className="stats-grid">
           <div className="stat-card violet">
             <span>🍔</span>
-
             <small>FOODS</small>
-
             <strong>{foods.length}</strong>
-
             <p>Menu ready to crave</p>
           </div>
 
           <div className="stat-card apricot">
             <span>📦</span>
-
             <small>ORDERS</small>
-
             <strong>{orders.length}</strong>
-
             <p>Journeys in the system</p>
           </div>
 
           <div className="stat-card ink">
             <span>👥</span>
-
             <small>USERS</small>
-
             <strong>{users.length}</strong>
-
             <p>Crave community</p>
           </div>
         </div>
@@ -1867,13 +1943,20 @@ function Admin() {
 
           <div className="admin-food-grid">
             {foods.map((f) => (
-              <div className="admin-food-mini" key={f._id}>
+              <div
+                className="admin-food-mini"
+                key={f._id}
+              >
                 <div className="admin-mini-image">
-                  {f.image ? (
-                    <img src={f.image} alt="" />
-                  ) : (
-                    <span>🍔</span>
-                  )}
+                  <img
+                    src={getFoodImage(f)}
+                    alt={f.name}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src =
+                        "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80";
+                    }}
+                  />
                 </div>
 
                 <div>
@@ -1929,7 +2012,9 @@ function Admin() {
                 key={o._id}
               >
                 <div>
-                  <strong>#{o._id.slice(-6)}</strong>
+                  <strong>
+                    #{o._id.slice(-6)}
+                  </strong>
 
                   <small>{o.address}</small>
                 </div>
@@ -1940,8 +2025,7 @@ function Admin() {
                       ? "status delivered"
                       : o.status === "Preparing"
                       ? "status preparing"
-                      : o.status ===
-                        "Out for Delivery"
+                      : o.status === "Out for Delivery"
                       ? "status delivery"
                       : "status pending"
                   }
@@ -1962,13 +2046,9 @@ function Admin() {
                   }
                 >
                   <option>Pending</option>
-
                   <option>Preparing</option>
-
                   <option>Out for Delivery</option>
-
                   <option>Delivered</option>
-
                   <option>Cancelled</option>
                 </select>
               </div>
@@ -2069,9 +2149,7 @@ function Admin() {
 function App() {
   const [user, setUser] = useState(() => {
     try {
-      return JSON.parse(
-        localStorage.getItem("user")
-      );
+      return JSON.parse(localStorage.getItem("user"));
     } catch {
       return null;
     }

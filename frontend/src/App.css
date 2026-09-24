@@ -2383,3 +2383,59 @@ a{
     gap:6px
   }
 }
+/* ================================
+   CRAVEHUB SUPER LOGO
+================================ */
+
+.crave-logo{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+}
+
+.crave-logo-icon{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(
+    135deg,
+    var(--apricot),
+    var(--lav)
+  );
+  font-size:20px;
+  line-height:1;
+  box-shadow:0 6px 20px rgba(183,156,255,.25);
+}
+
+.crave-logo-name{
+  font-size:25px;
+  font-weight:800;
+  letter-spacing:-.8px;
+  color:#fff;
+}
+
+.crave-logo-name span{
+  color:var(--apricot);
+}
+
+
+/* ================================
+   PASSWORD EYE BUTTON
+================================ */
+
+.password-wrap button{
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:38px;
+  height:38px;
+  padding:0;
+}
+
+.password-wrap button:hover{
+  color:var(--apricot);
+}
