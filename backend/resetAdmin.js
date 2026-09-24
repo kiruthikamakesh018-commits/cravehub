@@ -9,7 +9,7 @@ async function resetAdmin() {
     await mongoose.connect(process.env.MONGO_URI);
 
     const user = await User.findOne({
-      email: "admin@foodie.com"
+      email: "kiruthikamakesh018@gmail.com"
     });
 
     if (!user) {
@@ -17,14 +17,14 @@ async function resetAdmin() {
       process.exit();
     }
 
-    user.password = await bcrypt.hash("Admin@123", 10);
+    user.password = await bcrypt.hash("Kmakesh@018", 10);
     user.role = "admin";
 
     await user.save();
 
     console.log("Admin password reset successfully");
-    console.log("Email: admin@foodie.com");
-    console.log("Password: Admin@123");
+    console.log("Email:kiruthikamakesh018@gmail.com ");
+    console.log("Password:Kmakesh@018 ");
 
     process.exit();
   } catch (error) {
